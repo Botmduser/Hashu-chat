@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #000; color: #fff; font-family: sans-serif; }
+        .glass { background: rgba(20, 20, 20, 0.8); backdrop-filter: blur(20px); border: 1px solid #333; }
+        .btn-green { background: #00a884; transition: 0.3s; }
+        .btn-green:hover { background: #008f6f; }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+
+    <!-- Screen 1: Welcome -->
+    <div id="screen1" class="text-center p-10">
+        <h1 class="text-3xl font-bold mb-6">Welcome Hashu Chat</h1>
+        <p class="text-gray-400 mb-8 max-w-sm">Read our Privacy Policies. Tap Agree and continue to accept our Terms of Service.</p>
+        <button onclick="goToRegister()" class="btn-green w-full py-3 rounded-full font-bold">Agree and continue</button>
+    </div>
+
+    <!-- Screen 2: Register -->
+    <div id="screen2" class="hidden glass p-8 rounded-3xl w-80 text-center">
+        <h2 class="text-xl font-bold mb-6 text-[#00a884]">Enter your details</h2>
+        <input id="userName" placeholder="Full Name" class="w-full bg-transparent border-b border-gray-600 p-3 mb-4 outline-none focus:border-[#00a884]">
+        <input id="userPhone" placeholder="Phone Number" class="w-full bg-transparent border-b border-gray-600 p-3 mb-8 outline-none focus:border-[#00a884]">
+        <button onclick="register()" class="btn-green w-full py-3 rounded-full font-bold">Start Chatting</button>
+    </div>
+
+    <!-- Screen 3: Loading -->
+    <div id="screen3" class="hidden text-xl font-bold text-[#00a884] animate-pulse">Connecting...</div>
+
+    <!-- Screen 4: Dashboard -->
+    <div id="screen4" class="hidden glass w-full h-full flex overflow-hidden">
+        <div class="w-1/4 border-r border-gray-800 p-4">
+            <h2 class="font-bold mb-4">Hashu Chat Support</h2>
+        </div>
+        <div class="flex-1 flex flex-col">
+            <div id="msgBox" class="flex-1 p-6 overflow-y-auto"></div>
+            <div class="p-4 bg-gray-900 flex gap-2">
+                <input id="msg" class="flex-1 bg-transparent outline-none" placeholder="Message...">
+                <button onclick="send()" class="text-[#00a884] font-bold">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToRegister() {
+            document.getElementById('screen1').classList.add('hidden');
+            document.getElementById('screen2').classList.remove('hidden');
+        }
+
+        async function register() {
+            const name = document.getElementById('userName').value;
+            const phone = document.getElementById('userPhone').value;
+            
+            await fetch('http://localhost:3000/register', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ name, phone })
+            });
+
+            document.getElementById('screen2').classList.add('hidden');
+            document.getElementById('screen3').classList.remove('hidden');
+
+            setTimeout(() => {
+                document.getElementById('screen3').classList.add('hidden');
+                document.getElementById('screen4').classList.remove('hidden');
+            }, 3000);
+        }
+
+        async function send() {
+            const text = document.getElementById('msg').value;
+            await fetch('http://localhost:3000/chat', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ text })
+            });
+            location.reload();
+        }
+    </script>
+</body>
+  </html>
